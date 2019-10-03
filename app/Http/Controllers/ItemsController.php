@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Item;
+use Illuminate\Support\Facades\Validator;
 
 class ItemsController extends Controller
 {
@@ -36,7 +37,20 @@ class ItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'text' => 'required',
+            'body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+           return['response'=> $validator->messages(),'success'=> false ];
+        }
+
+        $item = new Item();
+        $item->text = $request->input('text');
+        $item->body = $request->input('body');
+        $item->save();
+        return response()->json($item);
     }
 
     /**
@@ -47,7 +61,8 @@ class ItemsController extends Controller
      */
     public function show($id)
     {
-        //
+        $item= Item::find($id);
+        return response()->json($item);
     }
 
     /**
@@ -70,7 +85,20 @@ class ItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'text' => 'required',
+            'body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+           return['response'=> $validator->messages(),'success'=> false ];
+        }
+
+        $item =Item::find($id);
+        $item->text = $request->input('text');
+        $item->body = $request->input('body');
+        $item->save();
+        return response()->json($item);
     }
 
     /**
@@ -81,6 +109,9 @@ class ItemsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item =Item::find($id);
+        $item->delete();
+
+        return['response'=>'item deleted' , 'success'=>true];
     }
 }
